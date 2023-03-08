@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: Monospace;
+    }
+    body{
+        min-height: 100vh;
+        max-height: 100vh;
+        width: 100%;
+        background-image: url('/file/bg.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+    }
+        nav{
+            height: 60px;
+            width: 100%;
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            line-height: 60px;
+            background-color: royalblue;
+            color: #fff;
+        }
+        .chats{
+            width: 100%;
+            height: 50vh;
+            overflow-y: scroll;
+            padding: 80px 15px;
+            box-sizing: border-box;
+        }
+        .chat{
+            clear: both;
+            display: block;
+            border-radius: 10px;
+            padding: 5px 10px;
+            color: #fff;
+            margin-top: 10px;
+            font-size: 1.3rem;
+        }
+        .your{
+            float: left;
+            background-color: #105490;
+        }
+        .my{
+            float: right;
+            background-color: #ff3000;
+        }
+        .message{
+            position: relative;
+            top: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            color: red;
+            width: 100%;
+            display: block;
+            margin: 20px auto;
+            clear: both;
+        }
+        .chat-feld{
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background-color: royalblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chat-feld input{
+            height: 40px;
+            border: none;
+            border-radius: 15px;
+            width: 60%;
+            padding: 2px 5%;
+            outline: none;
+            font-size: 1.4rem;
+        }
+        .chat-feld button{
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            background-color: tomato;
+            padding: 2px 7px;
+            font-size: 1.3rem;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a target="_blank" href="./">tab</a>PChat.io
+    </nav>
+    <div class="chats" id="chats">
+        <span class="message">don't refresh page</span>
+        
+    </div>
+    <div class="chat-feld">
+        <input type="text" name="chat" id="chat" placeholder="write your chat..." />
+        <button id="send">send</button>
+    </div>
+    <script src="/socket.io/socket.io.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+    
+        const path = location.pathname.slice(location.pathname.lastIndexOf('/'))
+        
+        const userName = prompt('enter Your name')
+        
+        const addTo=(clas,text)=>{
+            let ct = document.getElementById('chats')
+            ct.innerHTML+=`<span class="${clas}">${text}</span>`
+        }
+        
+        if (userName.length > 0) {
+            const socket = io(path);
+            
+            socket.emit('connectuser',userName)
+            socket.on('message',(message)=>{
+                addTo('message',message)
+            })
+            socket.on('ret',({cht,user})=>{
+                if (user!==userName) {
+                addTo('chat your',user+':'+cht)
+                }
+                
+                document.getElementById('chats').scrollTo(0,document.getElementById('chats').scrollHeight)
+                
+            })
+            document.getElementById('send').onclick=()=>{
+                let cht=document.getElementById('chat').value
+                
+                addTo('chat my',cht)
+                socket.emit('send',{user:userName,cht})
+                document.getElementById('chat').value=''
+            }
+            
+        }else{
+        alert('user name can\'t be empty')
+        }
+        
+    </script>
+</body>
+</html>

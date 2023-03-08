@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tutorial of socket.io</title>
+</head>
+<body>
+    <ul id="messages">
+        
+    </ul>
+    <h1>App not from meta</h1>
+    <form id="form">
+        <input type="text" name="name" id="name" placeholder="name"/>
+        <input type="text" name="chat" id="chat" placeholder="message">
+        <button type="submit">Send</button>
+    </form>
+    <a target="_blank" href="./">create</a>
+    <script src="/socket.io/socket.io.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        const socket = io();
+        
+        document.getElementById('form').onsubmit =  function(e){
+            e.preventDefault()
+            const name = e.target.name.value;
+            const message = e.target.chat.value;
+            
+            socket.emit('chatSend',{name,message});
+        }
+        socket.on('chatSendB',message=>{
+            document.getElementById('messages').innerHTML+=`<li>${message.name}:${message.message}</li>`
+            window.scrollTo(0,document.body.scrollHeight)
+        })
+    </script>
+    
+    
+    
+    <script type="text/javascript" charset="utf-8">
+        (function () { var script = document.createElement('script'); script.src="//cdn.jsdelivr.net/npm/eruda"; document.body.appendChild(script); script.onload = function () { eruda.init() } })();
+    </script>
+</body>
+</html>
